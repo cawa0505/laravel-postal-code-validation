@@ -2,7 +2,7 @@
 
 namespace Axlon\PostalCodeValidation\Tests\Integration;
 
-use Axlon\PostalCodeValidation\Support\Facades\PostalCodes;
+use Axlon\PostalCodeValidation\Support\Facades\PostalCode;
 use Axlon\PostalCodeValidation\Tests\TestCase;
 
 class FacadeTest extends TestCase
@@ -14,6 +14,6 @@ class FacadeTest extends TestCase
      */
     public function testFacadesProxiesPatternMatcher(): void
     {
-        $this->assertSame($this->app->make('postal_codes'), PostalCodes::getFacadeRoot());
+        $this->assertSame($this->app->make('postal_codes'), PostalCode::getFacadeRoot());
     }
 }

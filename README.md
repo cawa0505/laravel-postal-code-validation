@@ -131,7 +131,7 @@ If you want to validate postal codes manually outside of Laravel's validation sy
 directly, like so:
 
 ```php
-PostalCodes::passes($country, $postalCode); // returns a boolean
+PostalCode::passes($country, $postalCode); // returns a boolean
 ```
 
 ### Overriding rules
@@ -139,11 +139,11 @@ Depending on your use case you may want to override the patterns used to validat
 this by adding the code below in a central place in your application (e.g. a service provider):
 
 ```php
-PostalCodes::override('country', '/your pattern/');
+PostalCode::override('country', '/your pattern/');
 
 // You can also pass overrides as an array
 
-PostalCodes::override([
+PostalCode::override([
     'country 1' => '/pattern 1/',
     'country 2' => '/pattern 2/',
 ]);

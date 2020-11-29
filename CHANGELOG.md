@@ -4,4 +4,5 @@
 - Removed support for Laravel 5
 - Removed support for custom validators that do not extend the Laravel base validator
 - Removed `postal_code_for` validation rule
+- Changed facade name from `PostalCodes` to `PostalCode`
 - Added a fallback validation error message

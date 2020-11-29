@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool supports(string $countryCode)
  * @see \Axlon\PostalCodeValidation\PostalCodeValidator
  */
-class PostalCodes extends Facade
+class PostalCode extends Facade
 {
     /**
      * @inheritDoc
