@@ -22,7 +22,7 @@ Worldwide postal code validation for Laravel, based on Google's Address Data Ser
 - [Usage](#usage)
     - [Available rules](#available-rules)
     - [Fluent API](#fluent-api)
-    - [Adding an error message](#adding-an-error-message)
+    - [Customizing the error message](#customizing-the-error-message)
     - [Manually validating](#manually-validating)
     - [Overriding rules](#overriding-rules)
 - [Changelog](#changelog)
@@ -107,8 +107,9 @@ The same goes for the `postal_code_with` rule:
 ],
 ```
 
-### Adding an error message
-To add a meaningful error message, add the following lines to `resources/lang/{your language}/validation.php`:
+### Customizing the error message
+To override the default error message, you may add the following lines to your
+`resources/lang/{language}/validation.php` file:
 
 ```php
 'postal_code' => 'Your message here',

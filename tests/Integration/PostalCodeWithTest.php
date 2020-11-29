@@ -15,12 +15,12 @@ class PostalCodeWithTest extends TestCase
     public function testValidationFailsInvalidCountry(): void
     {
         $validator = $this->app->make('validator')->make(
-            ['postal_code' => '1234 AB', 'country' => 'not-a-country'],
-            ['postal_code' => 'postal_code_with:country']
+            ['value' => '1234 AB', 'country' => 'not-a-country'],
+            ['value' => 'postal_code_with:country']
         );
 
         $this->assertFalse($validator->passes());
-        $this->assertContains('validation.postal_code_with', $validator->errors()->all());
+        $this->assertContains('The value must be a valid postal code.', $validator->errors()->all());
     }
 
     /**
@@ -31,12 +31,12 @@ class PostalCodeWithTest extends TestCase
     public function testValidationFailsInvalidPostalCode(): void
     {
         $validator = $this->app->make('validator')->make(
-            ['postal_code' => 'not-a-postal-code', 'country' => 'NL'],
-            ['postal_code' => 'postal_code_with:country']
+            ['value' => 'not-a-postal-code', 'country' => 'NL'],
+            ['value' => 'postal_code_with:country']
         );
 
         $this->assertFalse($validator->passes());
-        $this->assertContains('validation.postal_code_with', $validator->errors()->all());
+        $this->assertContains('The value must be a valid postal code.', $validator->errors()->all());
     }
 
     /**
@@ -47,12 +47,12 @@ class PostalCodeWithTest extends TestCase
     public function testValidationFailsInvalidPostalCodeInArray(): void
     {
         $validator = $this->app->make('validator')->make(
-            ['postal_codes' => ['not-a-postal-code'], 'countries' => ['NL']],
-            ['postal_codes.*' => 'postal_code_with:countries.*']
+            ['value' => ['not-a-postal-code'], 'countries' => ['NL']],
+            ['value.*' => 'postal_code_with:countries.*']
         );
 
         $this->assertFalse($validator->passes());
-        $this->assertContains('validation.postal_code_with', $validator->errors()->all());
+        $this->assertContains('The value.0 must be a valid postal code.', $validator->errors()->all());
     }
 
     /**
@@ -64,12 +64,12 @@ class PostalCodeWithTest extends TestCase
     public function testValidationFailsNullPostalCode(): void
     {
         $validator = $this->app->make('validator')->make(
-            ['postal_code' => null, 'country' => 'DE'],
-            ['postal_code' => 'postal_code_with:country']
+            ['value' => null, 'country' => 'DE'],
+            ['value' => 'postal_code_with:country']
         );
 
         $this->assertFalse($validator->passes());
-        $this->assertContains('validation.postal_code_with', $validator->errors()->all());
+        $this->assertContains('The value must be a valid postal code.', $validator->errors()->all());
     }
 
     public function testValidationPassesIfAllFieldsAreMissing(): void
@@ -102,12 +102,12 @@ class PostalCodeWithTest extends TestCase
     public function testValidationIgnoresMissingFieldsFailing(): void
     {
         $validator = $this->app->make('validator')->make(
-            ['postal_code' => '1234 AB', 'empty' => '', 'null' => null, 'country' => 'BE'],
-            ['postal_code' => 'postal_code_with:empty,missing,null,country']
+            ['value' => '1234 AB', 'empty' => '', 'null' => null, 'country' => 'BE'],
+            ['value' => 'postal_code_with:empty,missing,null,country']
         );
 
         $this->assertFalse($validator->passes());
-        $this->assertContains('validation.postal_code_with', $validator->errors()->all());
+        $this->assertContains('The value must be a valid postal code.', $validator->errors()->all());
     }
 
     /**
