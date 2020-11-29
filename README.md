@@ -34,12 +34,7 @@ Worldwide postal code validation for Laravel, based on Google's Address Data Ser
 This package has the following requirements:
 
 - PHP 7.2 or higher
-- Laravel (or Lumen) 5.5 or higher
-
-| Laravel / Lumen version | Package version |
-|-------------------------|-----------------|
-| 5.1 - 5.4               | [2.x](https://github.com/axlon/laravel-postal-code-validation/tree/2.x) |
-| 5.5 and greater         | 3.x             |
+- Laravel (or Lumen) 6.0 or higher
 
 ## Installation
 You can install this package with Composer, by running the command below:

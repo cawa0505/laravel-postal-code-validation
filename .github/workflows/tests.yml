@@ -10,14 +10,12 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        laravel: [5.5.*, 5.6.*, 5.7.*, 5.8.*, 6.*, 7.*]
-        php: [7.2]
-        include:
-          - laravel: 6.*
-            php: 8.0
+        laravel: [ 6.*, 7.*, 8.* ]
+        php: [ 7.2, 7.3, 7.4, 8.0 ]
+        exclude:
           - laravel: 8.*
-            php: 7.3
-    name: Tests for Laravel ${{ matrix.laravel }} on PHP ${{ matrix.php }}
+            php: 7.2
+    name: Laravel ${{ matrix.laravel }} on PHP ${{ matrix.php }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -31,38 +29,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require laravel/laravel:"${{ matrix.laravel }}" --dev --no-update
+          composer require --dev --no-update laravel/framework:"${{ matrix.laravel }}"
           composer install --prefer-dist --no-interaction --no-progress
 
       - name: Run tests
-        run: composer test-laravel
-
-  lumen:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        lumen: [5.5.*, 5.6.*, 5.7.*, 5.8.*, 6.*, 7.*]
-        php: [7.2]
-        include:
-          - lumen: 8.*
-            php: 7.3
-    name: Tests for Lumen ${{ matrix.lumen }} on PHP ${{ matrix.php }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          tools: composer:v2
-          coverage: xdebug
-
-      - name: Install dependencies
-        run: |
-          composer require laravel/lumen:"${{ matrix.lumen }}" --dev --no-update
-          composer install --prefer-dist --no-interaction --no-progress
-
-      - name: Run tests
-        run: composer test-lumen
+        run: ./vendor/bin/phpunit
