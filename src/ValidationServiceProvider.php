@@ -2,8 +2,8 @@
 
 namespace Axlon\PostalCodeValidation;
 
-use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Factory;
 
 class ValidationServiceProvider extends ServiceProvider
 {
@@ -32,20 +32,22 @@ class ValidationServiceProvider extends ServiceProvider
     /**
      * Register the postal code validation rules with the validator.
      *
-     * @param \Illuminate\Contracts\Validation\Factory $validator
+     * @param \Illuminate\Validation\Factory $validator
      * @return void
      */
     public function registerRules(Factory $validator): void
     {
-        $validator->extend('postal_code', 'Axlon\PostalCodeValidation\Extensions\PostalCode@validate');
+        $validator->extend(
+            'postal_code',
+            'Axlon\PostalCodeValidation\Extensions\PostalCode@validate'
+        );
+
+        $validator->extendDependent(
+            'postal_code_with',
+            'Axlon\PostalCodeValidation\Extensions\PostalCodeFor@validate'
+        );
+
         $validator->replacer('postal_code', 'Axlon\PostalCodeValidation\Extensions\PostalCode@replace');
-
         $validator->replacer('postal_code_with', 'Axlon\PostalCodeValidation\Extensions\PostalCodeFor@replace');
-
-        if (method_exists($validator, 'extendDependent')) {
-            $validator->extendDependent('postal_code_with', 'Axlon\PostalCodeValidation\Extensions\PostalCodeFor@validate');
-        } else {
-            $validator->extend('postal_code_with', 'Axlon\PostalCodeValidation\Extensions\PostalCodeFor@validate');
-        }
     }
 }
