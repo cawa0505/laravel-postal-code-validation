@@ -21,7 +21,6 @@ Worldwide postal code validation for Laravel, based on Google's Address Data Ser
     - [Lumen](#lumen)
 - [Usage](#usage)
     - [Available rules](#available-rules)
-    - [Fluent API](#fluent-api)
     - [Customizing the error message](#customizing-the-error-message)
     - [Manually validating](#manually-validating)
     - [Overriding rules](#overriding-rules)
@@ -73,7 +72,9 @@ The field under validation must be a valid postal code in at least one of the gi
 countries in [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format.
 
 ```php
-'postal_code' => 'postal_code:NL,DE,FR,BE'
+'postal_code' => 'postal_code:NL,BE',
+// or...
+'postal_code' => PostalCode::for('NL', 'BE'),
 ```
 
 #### postal_code_with:foo,bar,...
@@ -81,30 +82,11 @@ The field under validation must be a postal code in at least one of the countrie
 one of the specified fields is present.
 
 ```php
-'billing.country' => 'required|string|max:2',
+'country' => 'required|string|max:2',
 ...
-'shipping.country' => 'nullable|string|max:2',
-'shipping.postal_code' => 'postal_code_with:billing.country,shipping.country'
-```
-
-### Fluent API
-If you prefer using a fluent object style over string based rules, that's also available:
-
-```php
-'postal_code' => [
-    PostalCode::for('NL')->or('BE'),
-],
-```
-
-The same goes for the `postal_code_with` rule:
-
-```php
-'billing.country' => 'required|string|max:2',
-...
-'shipping.country' => 'nullable|string|max:2',
-'shipping.postal_code' => [
-    PostalCode::with('billing.country')->or('shipping.country')
-],
+'postal_code' => 'postal_code_with:country',
+// or...
+'postal_code' => PostalCode::with('country'),
 ```
 
 ### Customizing the error message
