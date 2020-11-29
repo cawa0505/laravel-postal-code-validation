@@ -2,7 +2,12 @@
 
 namespace Axlon\PostalCodeValidation;
 
+use Axlon\PostalCodeValidation\Contracts\Rules;
 use Axlon\PostalCodeValidation\Support\Overrides;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Validation\Validator;
+use InvalidArgumentException;
 
 class PostalCodeValidator
 {
@@ -14,35 +19,23 @@ class PostalCodeValidator
     protected $overrides;
 
     /**
-     * The matching patterns.
+     * The validation rules.
      *
-     * @var array
+     * @var \Axlon\PostalCodeValidation\Contracts\Rules
      */
-    protected $patterns;
+    protected $rules;
 
     /**
      * Create a new postal code matcher.
      *
-     * @param array $patterns
+     * @param \Axlon\PostalCodeValidation\Contracts\Rules $rules
      * @param \Axlon\PostalCodeValidation\Support\Overrides $overrides
      * @return void
      */
-    public function __construct(array $patterns, Overrides $overrides)
+    public function __construct(Rules $rules, Overrides $overrides)
     {
         $this->overrides = $overrides;
-        $this->patterns = $patterns;
-    }
-
-    /**
-     * Determine if the given postal code(s) are invalid for the given country.
-     *
-     * @param string $countryCode
-     * @param string|null ...$postalCodes
-     * @return bool
-     */
-    public function fails(string $countryCode, ?string ...$postalCodes): bool
-    {
-        return !$this->passes($countryCode, ...$postalCodes);
+        $this->rules = $rules;
     }
 
     /**
@@ -58,63 +51,124 @@ class PostalCodeValidator
     }
 
     /**
-     * Determine if the given postal code(s) are valid for the given country.
+     * Prepare the other values for validation.
      *
-     * @param string $countryCode
-     * @param string|null ...$postalCodes
+     * @param array $attributes
+     * @param \Illuminate\Validation\Validator $validator
+     * @return array
+     */
+    protected function prepareOthers(array $attributes, Validator $validator): array
+    {
+        $others = array_map(function (string $attribute) use ($validator) {
+            return Arr::get($validator->getData(), $attribute);
+        }, $attributes);
+
+        return array_map(function ($other) {
+            return is_string($other) || is_int($other) ? $other : null;
+        }, $others);
+    }
+
+    /**
+     * Replace all place-holders for the postal_code rule.
+     *
+     * @param string $message
+     * @param string $attribute
+     * @param string $rule
+     * @param string[] $parameters
+     * @return string
+     */
+    public function replacePostalCode(string $message, string $attribute, string $rule, array $parameters): string
+    {
+        $parameters = Collection::make($parameters)->filter()->mapWithKeys(function (string $parameter) {
+            return [$parameter => $this->rules->getExample($parameter)];
+        });
+
+        $replace = [
+            ':attribute' => $attribute,
+            ':countries' => $parameters->keys()->implode(', '),
+            ':examples' => $parameters->filter()->implode(', '),
+        ];
+
+        return str_replace(array_keys($replace), array_values($replace), $message);
+    }
+
+    /**
+     * Replace all place-holders for the postal_code_with rule.
+     *
+     * @param string $message
+     * @param string $attribute
+     * @param string $rule
+     * @param string[] $parameters
+     * @param \Illuminate\Validation\Validator $validator
+     * @return string
+     */
+    public function replacePostalCodeWith(string $message, string $attribute, string $rule, array $parameters, Validator $validator): string
+    {
+        return $this->replacePostalCode($message, $attribute, $rule, $this->prepareOthers($parameters, $validator));
+    }
+
+    /**
+     * Set the validation rules.
+     *
+     * @param \Axlon\PostalCodeValidation\Contracts\Rules $rules
+     * @return void
+     */
+    public function use(Rules $rules): void
+    {
+        $this->rules = $rules;
+    }
+
+    /**
+     * Validate that an attribute is a valid postal code.
+     *
+     * @param string $attribute
+     * @param mixed $value
+     * @param string[] $parameters
      * @return bool
      */
-    public function passes(string $countryCode, ?string ...$postalCodes): bool
+    public function validatePostalCode(string $attribute, $value, array $parameters): bool
     {
-        if (!$this->supports($countryCode)) {
+        if (empty($parameters)) {
+            throw new InvalidArgumentException('Validation rule postal_code requires at least 1 parameter.');
+        }
+
+        if (!is_string($value) && !is_int($value)) {
             return false;
         }
 
-        if (($pattern = $this->patternFor($countryCode)) === null) {
-            return true;
-        }
+        $parameters = array_filter($parameters);
+        $value = strtoupper($value);
 
-        foreach ($postalCodes as $postalCode) {
-            if ($postalCode === null || trim($postalCode) === '') {
-                return false;
+        foreach ($parameters as $parameter) {
+            if ($this->overrides->has($parameter)) {
+                $pattern = $this->overrides->get($parameter);
+            } elseif ($this->rules->has($parameter)) {
+                $pattern = $this->rules->get($parameter);
             }
 
-            if (preg_match($pattern, $postalCode) !== 1) {
-                return false;
+            if (isset($pattern) && preg_match($pattern, $value) === 1) {
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     /**
-     * Get the matching pattern for the given country.
+     * Validate that an attribute is a valid postal code for specified countries.
      *
-     * @param string $countryCode
-     * @return string|null
-     */
-    public function patternFor(string $countryCode): ?string
-    {
-        $countryCode = strtoupper($countryCode);
-
-        if ($this->overrides->has($countryCode)) {
-            return $this->overrides->get($countryCode);
-        }
-
-        return $this->patterns[$countryCode] ?? null;
-    }
-
-    /**
-     * Determine if a matching pattern exists for the given country.
-     *
-     * @param string $countryCode
+     * @param string $attribute
+     * @param mixed $value
+     * @param string[] $parameters
+     * @param \Illuminate\Validation\Validator $validator
      * @return bool
      */
-    public function supports(string $countryCode): bool
+    public function validatePostalCodeWith(string $attribute, $value, array $parameters, Validator $validator): bool
     {
-        $countryCode = strtoupper($countryCode);
+        if (empty($parameters)) {
+            throw new InvalidArgumentException('Validation rule postal_code_with requires at least 1 parameter.');
+        }
 
-        return $this->overrides->has($countryCode)
-            || array_key_exists($countryCode, $this->patterns);
+        return $this->validatePostalCode($attribute, $value, $this->prepareOthers($parameters, $validator));
     }
 }

@@ -78,12 +78,10 @@ countries in [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha
 ```
 
 #### postal_code_with:foo,bar,...
-The field under validation must be a postal code in at least one of the countries in the given fields _only if_ at least
-one of the specified fields is present.
+The field under validation must be a postal code in at least one of the countries in the given fields.
 
 ```php
-'country' => 'required|string|max:2',
-...
+'country' => '...',
 'postal_code' => 'postal_code_with:country',
 // or...
 'postal_code' => PostalCode::with('country'),
@@ -109,11 +107,11 @@ Placeholder | Description
 *The `:countries` and `:examples` placeholders may be empty if no valid countries are passed.
 
 ### Manually validating
-If you want to validate postal codes manually outside of Laravel's validation system, you can call the validator
+If you want to validate postal codes manually outside of Laravel's validation system, you may call the validator
 directly, like so:
 
 ```php
-PostalCode::passes($country, $postalCode); // returns a boolean
+PostalCode::validate($postalCode, $countries); // returns a boolean
 ```
 
 ### Overriding rules

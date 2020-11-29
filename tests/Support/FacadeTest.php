@@ -20,4 +20,13 @@ class FacadeTest extends TestCase
         $this->assertEquals('postal_code:foo,bar', PostalCode::for(['foo', 'bar']));
         $this->assertEquals('postal_code:foo,bar,baz', PostalCode::for('foo', 'bar', 'baz'));
     }
+
+    public function testItValidatesAgainstAlpha2CountryCodes(): void
+    {
+        PostalCode::useAlpha2();
+
+        $this->assertTrue(PostalCode::validate('33380', 'FR'));
+        $this->assertFalse(PostalCode::validate('33380', 'FRA'));
+        $this->assertFalse(PostalCode::validate('33380', 250));
+    }
 }

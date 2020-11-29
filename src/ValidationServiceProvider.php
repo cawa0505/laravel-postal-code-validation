@@ -2,6 +2,7 @@
 
 namespace Axlon\PostalCodeValidation;
 
+use Axlon\PostalCodeValidation\Rules\Alpha2;
 use Axlon\PostalCodeValidation\Support\Overrides;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory;
@@ -25,9 +26,9 @@ class ValidationServiceProvider extends ServiceProvider
 
         $this->app->singleton('postal_codes', function () {
             $overrides = new Overrides();
-            $patterns = require __DIR__ . '/../resources/patterns.php';
+            $rules = new Alpha2();
 
-            return new PostalCodeValidator($patterns, $overrides);
+            return new PostalCodeValidator($rules, $overrides);
         });
 
         $this->app->alias('postal_codes', PostalCodeValidator::class);
@@ -43,17 +44,24 @@ class ValidationServiceProvider extends ServiceProvider
     {
         $validator->extend(
             'postal_code',
-            'Axlon\PostalCodeValidation\Extensions\PostalCode@validate',
+            'Axlon\PostalCodeValidation\PostalCodeValidator@validatePostalCode',
             'The :attribute must be a valid postal code.'
         );
 
         $validator->extendDependent(
             'postal_code_with',
-            'Axlon\PostalCodeValidation\Extensions\PostalCodeFor@validate',
+            'Axlon\PostalCodeValidation\PostalCodeValidator@validatePostalCodeWith',
             'The :attribute must be a valid postal code.'
         );
 
-        $validator->replacer('postal_code', 'Axlon\PostalCodeValidation\Extensions\PostalCode@replace');
-        $validator->replacer('postal_code_with', 'Axlon\PostalCodeValidation\Extensions\PostalCodeFor@replace');
+        $validator->replacer(
+            'postal_code',
+            'Axlon\PostalCodeValidation\PostalCodeValidator@replacePostalCode'
+        );
+
+        $validator->replacer(
+            'postal_code_with',
+            'Axlon\PostalCodeValidation\PostalCodeValidator@replacePostalCodeWith'
+        );
     }
 }

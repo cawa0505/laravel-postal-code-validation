@@ -2,14 +2,15 @@
 
 namespace Axlon\PostalCodeValidation\Support\Facades;
 
+use Axlon\PostalCodeValidation\Rules\Alpha2;
 use Axlon\PostalCodeValidation\Support\Constraint;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static bool fails(string $countryCode, string ...$postalCodes)
- * @method static bool passes(string $countryCode, string ...$postalCodes)
  * @method static void override(array|string $key, string|null $pattern = null)
- * @method static bool supports(string $countryCode)
+ * @method static void use(\Axlon\PostalCodeValidation\Contracts\Rules $rules)
+ *
  * @see \Axlon\PostalCodeValidation\PostalCodeValidator
  */
 class PostalCode extends Facade
@@ -31,6 +32,28 @@ class PostalCode extends Facade
     protected static function getFacadeAccessor(): string
     {
         return 'postal_codes';
+    }
+
+    /**
+     * Validate using ISO 3166-1 alpha-2 country codes.
+     *
+     * @return void
+     */
+    public static function useAlpha2(): void
+    {
+        static::use(static::getFacadeApplication()->make(Alpha2::class));
+    }
+
+    /**
+     * Validate that the value is a valid postal code.
+     *
+     * @param string $value
+     * @param string|string[] ...$parameters
+     * @return bool
+     */
+    public static function validate(string $value, ...$parameters): bool
+    {
+        return static::getFacadeRoot()->validatePostalCode('attribute', $value, Arr::flatten($parameters));
     }
 
     /**
