@@ -3,6 +3,7 @@
 namespace Axlon\PostalCodeValidation\Tests\Unit;
 
 use Axlon\PostalCodeValidation\PostalCodeValidator;
+use Axlon\PostalCodeValidation\Support\Overrides;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
 
@@ -35,7 +36,8 @@ class PostalCodeValidatorTest extends TestCase
     protected function setUp(): void
     {
         $this->validator = new PostalCodeValidator(
-            require __DIR__ . '/../../resources/patterns.php'
+            require __DIR__ . '/../../resources/patterns.php',
+            new Overrides()
         );
     }
 

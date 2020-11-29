@@ -2,6 +2,7 @@
 
 namespace Axlon\PostalCodeValidation;
 
+use Axlon\PostalCodeValidation\Support\Overrides;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory;
 
@@ -23,7 +24,10 @@ class ValidationServiceProvider extends ServiceProvider
         }
 
         $this->app->singleton('postal_codes', function () {
-            return new PostalCodeValidator(require __DIR__ . '/../resources/patterns.php');
+            $overrides = new Overrides();
+            $patterns = require __DIR__ . '/../resources/patterns.php';
+
+            return new PostalCodeValidator($patterns, $overrides);
         });
 
         $this->app->alias('postal_codes', PostalCodeValidator::class);

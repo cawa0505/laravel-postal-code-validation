@@ -2,8 +2,17 @@
 
 namespace Axlon\PostalCodeValidation;
 
+use Axlon\PostalCodeValidation\Support\Overrides;
+
 class PostalCodeValidator
 {
+    /**
+     * The validation overrides.
+     *
+     * @var \Axlon\PostalCodeValidation\Support\Overrides
+     */
+    protected $overrides;
+
     /**
      * The matching patterns.
      *
@@ -12,21 +21,15 @@ class PostalCodeValidator
     protected $patterns;
 
     /**
-     * The matching pattern overrides.
-     *
-     * @var array
-     */
-    protected $patternOverrides;
-
-    /**
      * Create a new postal code matcher.
      *
      * @param array $patterns
+     * @param \Axlon\PostalCodeValidation\Support\Overrides $overrides
      * @return void
      */
-    public function __construct(array $patterns)
+    public function __construct(array $patterns, Overrides $overrides)
     {
-        $this->patternOverrides = [];
+        $this->overrides = $overrides;
         $this->patterns = $patterns;
     }
 
@@ -45,20 +48,13 @@ class PostalCodeValidator
     /**
      * Override pattern matching for the given country.
      *
-     * @param array|string $countryCode
+     * @param array|string $key
      * @param string|null $pattern
      * @return void
      */
-    public function override($countryCode, ?string $pattern = null): void
+    public function override($key, ?string $pattern = null): void
     {
-        if (is_array($countryCode)) {
-            $this->patternOverrides = array_merge(
-                $this->patternOverrides,
-                array_change_key_case($countryCode, CASE_UPPER)
-            );
-        } else {
-            $this->patternOverrides[strtoupper($countryCode)] = $pattern;
-        }
+        $this->overrides->add($key, $pattern);
     }
 
     /**
@@ -101,9 +97,11 @@ class PostalCodeValidator
     {
         $countryCode = strtoupper($countryCode);
 
-        return $this->patternOverrides[$countryCode]
-            ?? $this->patterns[$countryCode]
-            ?? null;
+        if ($this->overrides->has($countryCode)) {
+            return $this->overrides->get($countryCode);
+        }
+
+        return $this->patterns[$countryCode] ?? null;
     }
 
     /**
@@ -116,7 +114,7 @@ class PostalCodeValidator
     {
         $countryCode = strtoupper($countryCode);
 
-        return array_key_exists($countryCode, $this->patternOverrides)
+        return $this->overrides->has($countryCode)
             || array_key_exists($countryCode, $this->patterns);
     }
 }
