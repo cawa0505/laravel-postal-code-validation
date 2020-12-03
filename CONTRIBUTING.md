@@ -5,7 +5,7 @@ We accept contributions via Pull Requests on [Github](https://github.com/axlon/l
 
 ## Guidelines
 - **Create an issue first** - This will make sure you don't waste your time building something that won't be merged
-- **[PSR-2 Coding Standard](https://www.php-fig.org/psr/psr-2/)** - The easiest way to apply the conventions is to install [PHP Code Sniffer](http://pear.php.net/package/PHP_CodeSniffer)
+- **[PSR-12 Coding Standard](https://www.php-fig.org/psr/psr-12/)** - Submitted code must conform to this standard
 - **Document any change in behaviour** - Make sure the `README.md` and any other relevant documentation are kept up to date
 - **Add tests** - Any significant change in the codebase should include tests
 - **Create feature branches** - Pull requests from your master branch won't be accepted

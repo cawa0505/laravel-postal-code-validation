@@ -1,8 +1,7 @@
-preset: psr2
+preset: psr12
 
 enabled:
   - alpha_ordered_imports
-  - concat_with_spaces
   - no_trailing_comma_in_list_call
   - no_trailing_comma_in_singleline_array
   - no_unused_imports
