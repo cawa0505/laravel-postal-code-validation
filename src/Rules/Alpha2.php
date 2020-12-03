@@ -14,21 +14,24 @@ class Alpha2 implements Rules
     protected $data;
 
     /**
-     * The examples.
-     *
-     * @var array
-     */
-    protected $examples;
-
-    /**
      * Create a new ISO 3166-1 alpha-2 rule set.
      *
      * @return void
      */
     public function __construct()
     {
-        $this->data = require __DIR__ . '/../../resources/patterns.php';
-        $this->examples = require __DIR__ . '/../../resources/examples.php';
+        $this->data = require __DIR__ . '/../../resources/countries.php';
+    }
+
+    /**
+     * Compile the validation pattern to a regular expression.
+     *
+     * @param string $pattern
+     * @return string
+     */
+    protected function compilePattern(string $pattern): string
+    {
+        return sprintf('/^(?:%s)$/', $pattern);
     }
 
     /**
@@ -36,7 +39,11 @@ class Alpha2 implements Rules
      */
     public function get(string $key): string
     {
-        return $this->data[strtoupper($key)] ?? '/.*/';
+        $key = strtoupper($key);
+
+        return isset($this->data[$key][0])
+            ? $this->compilePattern($this->data[$key][0])
+            : '/.*/';
     }
 
     /**
@@ -44,7 +51,7 @@ class Alpha2 implements Rules
      */
     public function getExample(string $key): ?string
     {
-        return $this->examples[strtoupper($key)] ?? null;
+        return $this->data[strtoupper($key)][1] ?? null;
     }
 
     /**
