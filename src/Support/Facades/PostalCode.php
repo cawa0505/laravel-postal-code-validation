@@ -3,6 +3,8 @@
 namespace Axlon\PostalCodeValidation\Support\Facades;
 
 use Axlon\PostalCodeValidation\Rules\Alpha2;
+use Axlon\PostalCodeValidation\Rules\Alpha3;
+use Axlon\PostalCodeValidation\Rules\Numeric;
 use Axlon\PostalCodeValidation\Support\Constraint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Facade;
@@ -42,6 +44,26 @@ class PostalCode extends Facade
     public static function useAlpha2(): void
     {
         static::use(static::getFacadeApplication()->make(Alpha2::class));
+    }
+
+    /**
+     * Validate using ISO 3166-1 alpha-3 country codes.
+     *
+     * @return void
+     */
+    public static function useAlpha3(): void
+    {
+        static::use(static::getFacadeApplication()->make(Alpha3::class));
+    }
+
+    /**
+     * Validate using ISO 3166-1 alpha-3 country codes.
+     *
+     * @return void
+     */
+    public static function useNumeric(): void
+    {
+        static::use(static::getFacadeApplication()->make(Numeric::class));
     }
 
     /**

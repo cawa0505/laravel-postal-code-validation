@@ -23,6 +23,7 @@ Worldwide postal code validation for Laravel, based on Google's Address Data Ser
     - [Available rules](#available-rules)
     - [Customizing the error message](#customizing-the-error-message)
     - [Manually validating](#manually-validating)
+    - [Country formats](#country-formats)
     - [Overriding rules](#overriding-rules)
 - [Changelog](#changelog)
 - [Contributing](#contributing)
@@ -113,6 +114,33 @@ directly, like so:
 ```php
 PostalCode::validate($postalCode, $countries); // returns a boolean
 ```
+
+### Country formats
+
+> This feature requires [league/iso3166](https://packagist.org/packages/league/iso3166)
+
+This package uses [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country codes as
+parameters by default, however it also supports [ISO 3166-1 alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3)
+and [ISO 3166-1 numeric](https://en.wikipedia.org/wiki/ISO_3166-1_numeric) formats.
+
+To validate using ISO 3166-1 alpha-3 country codes:
+
+```php
+PostalCode::useAlpha3();
+// ...
+PostalCode::validate($postalCode, 'USA');
+```
+
+Likewise, to use ISO 3166-1 numeric country codes:
+
+```php
+PostalCode::useNumeric();
+// ...
+PostalCode::validate($postalCode, 840);
+```
+
+Note that this works for both the validation rules and manual validation, if you are using this for validation rules it
+is recommended to set this in a service provider.
 
 ### Overriding rules
 Depending on your use case you may want to override the patterns used to validate postal codes for a country. You can do

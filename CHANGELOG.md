@@ -8,5 +8,7 @@
 - Changed facade name from `PostalCodes` to `PostalCode`
 - Changed `postal_code_with`, it will no longer pass when all the referenced fields are missing
 - Added a fallback validation error message
+- Added support for ISO 3166-1 alpha-3 country codes
+- Added support for ISO 3166-1 numeric country codes
 - Fixed `TypeError` when a rule received a value that was not stringable (e.g. an array)
 - Fixed `TypeError` when `postal_code_with` received a parameter that pointed to a field that was not stringable (e.g. an array)

@@ -29,4 +29,22 @@ class FacadeTest extends TestCase
         $this->assertFalse(PostalCode::validate('33380', 'FRA'));
         $this->assertFalse(PostalCode::validate('33380', 250));
     }
+
+    public function testItValidatesAgainstAlpha3CountryCodes(): void
+    {
+        PostalCode::useAlpha3();
+
+        $this->assertFalse(PostalCode::validate('33380', 'FR'));
+        $this->assertTrue(PostalCode::validate('33380', 'FRA'));
+        $this->assertFalse(PostalCode::validate('33380', 250));
+    }
+
+    public function testItValidatesAgainstNumericCountryCodes(): void
+    {
+        PostalCode::useNumeric();
+
+        $this->assertFalse(PostalCode::validate('33380', 'FR'));
+        $this->assertFalse(PostalCode::validate('33380', 'FRA'));
+        $this->assertTrue(PostalCode::validate('33380', 250));
+    }
 }
